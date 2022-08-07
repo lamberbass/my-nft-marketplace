@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.7.2",
     "ethers": "^5.6.9",
     "ipfs-http-client": "^57.0.3",
     "js-untar": "^2.0.0",

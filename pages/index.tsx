@@ -2,22 +2,14 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link';
 import { useState } from 'react';
-import { providers } from 'ethers';
+
+import { getConnectedAccounts } from '../utils/web3-service';
 
 const Home: NextPage = () => {
   const [currentAccount, setCurrentAccount] = useState('');
 
   const connectWallet = async () => {
-    const ethereum: providers.ExternalProvider | undefined = (window as any).ethereum;
-
-    if (!ethereum || !ethereum.request) {
-      return alert('Please install MetaMask.');
-    }
-
-    const accounts: string[] = await ethereum.request({
-      method: 'eth_requestAccounts',
-    });
-
+    const accounts: string[] = await getConnectedAccounts();
     setCurrentAccount(accounts[0]);
   };
 
