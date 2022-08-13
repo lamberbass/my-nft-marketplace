@@ -49,7 +49,7 @@ const CreateNft: NextPage = () => {
 
       {imageSrc
         ? <div>
-            <img src={imageSrc} style={{ height: '400px' }} ></img>
+            <img src={imageSrc} style={{ maxHeight: '400px' }} ></img>
             <br />
             Price: <input type='number' onChange={e => setNftPrice(+e.target.value)} value={nftPrice}/>
             <button type='button' onClick={createNft}>Create NFT</button>

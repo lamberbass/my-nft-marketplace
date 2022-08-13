@@ -1,17 +1,31 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { getConnectedAccounts } from '../utils/web3-service';
+import ViewNft from '../components/view-nft';
+import { Item } from '../models/item';
+
+import { getConnectedAccounts, getAllItems } from '../utils/web3-service';
 
 const Home: NextPage = () => {
   const [currentAccount, setCurrentAccount] = useState('');
+  const [items, setItems] = useState([] as Item[]);
 
   const connectWallet = async () => {
     const accounts: string[] = await getConnectedAccounts();
     setCurrentAccount(accounts[0]);
   };
+
+  const getItems = async () => {
+    const items: Item[] = await getAllItems();
+    console.log('items', items);
+    setItems(items);
+  };
+
+  useEffect(() => { 
+    getItems(); 
+  }, []);
 
   return (
     <div>
@@ -26,6 +40,11 @@ const Home: NextPage = () => {
 
       {currentAccount ? <div>Current account: {currentAccount}</div>
         : <button type='button' onClick={connectWallet}>Connect Wallet</button>}
+
+      <br></br>
+
+      {items.length > 0 ? items.map(i => <ViewNft key={i.tokenId} item={i} />)
+        : <div>Downloading items</div>}
 
       <br></br>
 

@@ -38,5 +38,17 @@ contract MyNftMarketplace is ERC721URIStorage {
       payable(address(this)),
       price
     );
+  }    
+      
+  function getAllItems() public view returns (Item[] memory) {
+    uint itemCount = tokenIds.current();
+    Item[] memory items = new Item[](itemCount);
+
+    for (uint i = 0; i < itemCount; i++) {
+      Item storage currentItem = idToItem[i + 1];
+      items[i] = currentItem;
+    }
+
+    return items;
   }
 }
