@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "hardhat/console.sol";
 
 contract MyNftMarketplace is ERC721URIStorage {
   using Counters for Counters.Counter;
@@ -11,7 +12,6 @@ contract MyNftMarketplace is ERC721URIStorage {
   struct Item {
     uint256 tokenId;
     address payable seller;
-    address payable owner;
     uint256 price;
   }
 
@@ -22,7 +22,7 @@ contract MyNftMarketplace is ERC721URIStorage {
     owner = payable(msg.sender);
   }
 
-  function createToken(string memory tokenURI, uint256 price) public payable {
+  function createToken(string memory tokenURI, uint256 price) public {
     require(price > 0, "Price must be at least 1 wei");
 
     tokenIds.increment();
@@ -30,12 +30,10 @@ contract MyNftMarketplace is ERC721URIStorage {
 
     _mint(msg.sender, newTokenId);
     _setTokenURI(newTokenId, tokenURI);
-    _transfer(msg.sender, address(this), newTokenId);
 
     idToItem[newTokenId] = Item(
       newTokenId,
       payable(msg.sender),
-      payable(address(this)),
       price
     );
   }    
@@ -50,5 +48,15 @@ contract MyNftMarketplace is ERC721URIStorage {
     }
 
     return items;
+  }
+
+  function buyToken(uint256 tokenId) public payable {
+    uint price = idToItem[tokenId].price;
+    address payable seller = idToItem[tokenId].seller;
+    require(msg.value == price, "Please submit the asking price in order to complete the purchase");
+    
+    idToItem[tokenId].seller = payable(msg.sender);
+    _transfer(seller, msg.sender, tokenId);
+    payable(seller).transfer(msg.value);
   }
 }

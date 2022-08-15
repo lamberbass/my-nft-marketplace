@@ -3,5 +3,5 @@ export interface Item {
   tokenURI: string;
   sellerAddress: string;
   ownerAddress: string;
-  price: number;
+  ethPrice: string;
 }

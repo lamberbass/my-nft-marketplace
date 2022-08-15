@@ -1,9 +1,10 @@
-import { providers, ethers } from 'ethers';
+import { providers, ethers, BigNumber } from 'ethers';
+import { formatEther, parseEther } from 'ethers/lib/utils';
 
 import marketContractAbi from '../artifacts/contracts/MyNftMarketplace.sol/MyNftMarketplace.json'
 import { Item } from '../models/item';
 
-const MarketContractAddress = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0';
+const MarketContractAddress = '0x0165878A594ca255338adfa4d48449f69242Eb8F';
 
 function getContract(): ethers.Contract {
   const ethereum: providers.ExternalProvider = (window as any).ethereum;
@@ -28,11 +29,11 @@ export async function getConnectedAccounts(): Promise<string[]> {
   return accounts;
 };
 
-export async function createToken(url: string, price: number): Promise<void> {
+export async function createToken(url: string, ethPrice: string): Promise<void> {
   await getConnectedAccounts();
 
   const contract: ethers.Contract = getContract();
-  const transaction = await contract.createToken(url, price);
+  const transaction = await contract.createToken(url, parseEther(ethPrice));
   const result = await transaction.wait();
   console.log('createToken result', result);
 };
@@ -52,6 +53,15 @@ export async function getAllItems(): Promise<Item[]> {
     tokenURI: tokenURIs[index],
     ownerAddress: item.owner,
     sellerAddress: item.seller,
-    price: item.price.toNumber()
+    ethPrice: formatEther(item.price)
   } as Item));
+};
+
+export async function buyToken(tokenId: number, ethPrice: string): Promise<void> {
+  await getConnectedAccounts();
+
+  const contract: ethers.Contract = getContract();
+  const transaction = await contract.buyToken(tokenId, { value: parseEther(ethPrice) });
+  const result = await transaction.wait();
+  console.log('buyToken result', result);
 };

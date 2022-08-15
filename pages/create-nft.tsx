@@ -7,7 +7,7 @@ const CreateNft: NextPage = () => {
   const [selectedFile, setSelectedFile] = useState({} as File);
   const [imageSrc, setImageSrc] = useState('');
   const [nftPath, setNftPath] = useState('');
-  const [nftPrice, setNftPrice] = useState(1);
+  const [nftPrice, setNftPrice] = useState("1");
 
   const onFileSelected = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -51,7 +51,7 @@ const CreateNft: NextPage = () => {
         ? <div>
             <img src={imageSrc} style={{ maxHeight: '400px' }} ></img>
             <br />
-            Price: <input type='number' onChange={e => setNftPrice(+e.target.value)} value={nftPrice}/>
+            ETH Price: <input type='number' onChange={e => setNftPrice(e.target.value)} value={nftPrice}/>
             <button type='button' onClick={createNft}>Create NFT</button>
           </div>
         : <div></div>}
