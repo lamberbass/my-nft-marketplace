@@ -19,11 +19,11 @@ const Home: NextPage = () => {
 
   const getItems = async () => {
     const items: Item[] = await getAllItems();
-    console.log('items', items);
     setItems(items);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
+    connectWallet();
     getItems(); 
   }, []);
 
@@ -34,23 +34,24 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>
-        Welcome to My NFT Marketplace!
-      </h1>
+      <h1>Welcome to My NFT Marketplace!</h1>
 
       {currentAccount ? <div>Current account: {currentAccount}</div>
         : <button type='button' onClick={connectWallet}>Connect Wallet</button>}
 
       <br></br>
 
-      {items.length > 0 ? items.map(i => <ViewNft key={i.tokenId} item={i} />)
-        : <div>Downloading items</div>}
-
-      <br></br>
-
       <button>
         <Link href={'/create-nft'}>Create NFT</Link>
       </button>
+
+      <hr></hr>
+
+      <h2>NFTs for sale</h2>
+
+      {items.length > 0 
+        ? items.map(i => <ViewNft key={i.tokenId} item={i} canBuy={i.sellerAddress.toLowerCase() !== currentAccount.toLowerCase()}/>)
+        : <div>No NFTs</div>}
     </div>
   )
 }

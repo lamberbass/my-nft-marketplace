@@ -48,13 +48,16 @@ export async function getAllItems(): Promise<Item[]> {
   const getTokenURIs: Promise<string>[] = result.map(i => contract.tokenURI(i.tokenId));
   const tokenURIs: string[] = await Promise.all(getTokenURIs);
 
-  return result.map((item: any, index: number) => ({
+  const items: Item[] = result.map((item: any, index: number) => ({
     tokenId: item.tokenId.toNumber(),
     tokenURI: tokenURIs[index],
-    ownerAddress: item.owner,
     sellerAddress: item.seller,
     ethPrice: formatEther(item.price)
   } as Item));
+
+  console.log('items', items);
+
+  return items;
 };
 
 export async function buyToken(tokenId: number, ethPrice: string): Promise<void> {

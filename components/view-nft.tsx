@@ -7,6 +7,7 @@ import { buyToken } from '../utils/web3-service';
 
 export interface ViewNftProps {
   item: Item;
+  canBuy: boolean;
 }
 
 const ViewNft = (props: ViewNftProps) => {
@@ -29,12 +30,12 @@ const ViewNft = (props: ViewNftProps) => {
     <div>
       {imageSrc
         ? <div>
-            <img src={imageSrc} style={{ maxHeight: '400px' }} ></img>
+            <img src={imageSrc} style={{ maxHeight: '200px' }} ></img>
             <br />
             Price: {props.item.ethPrice} ETH
+            { props.canBuy ? <button type='button' onClick={buyNft}>Buy</button> : '' }
             <br />
             Seller: {props.item.sellerAddress}
-            <button type='button' onClick={buyNft}>Buy</button>
           </div>
         : <div>Downloading...</div>}
     </div>
