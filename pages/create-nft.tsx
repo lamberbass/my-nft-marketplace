@@ -1,6 +1,7 @@
-import type { NextPage } from 'next'
+import type { NextPage } from 'next';
 import { NextRouter, useRouter } from 'next/router';
-import { useState } from 'react'
+import { useState } from 'react';
+
 import { uploadFile } from '../utils/ipfs-service';
 import { createToken } from '../utils/web3-service';
 import styles from '../styles/CreateNft.module.css'

@@ -31,4 +31,6 @@ hr {
 :root {
   --primary-color-1: #5650e6;
   --primary-color-2: #a852e6;
+  --success: #1dcb1d;
+  --danger: #c22e4c;
 }

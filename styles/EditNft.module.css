@@ -1,0 +1,27 @@
+.priceContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.priceInput {
+    width: 50%;
+    background: transparent;
+    border: 1px solid rgba(138, 138, 160, 0.3);
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    padding: 0px 20px;
+    line-height: 30px;
+}
+
+.priceInput:focus {
+    outline-width: 0;
+}
+
+.cardBottom {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}

@@ -4,7 +4,7 @@ import { formatEther, parseEther } from 'ethers/lib/utils';
 import marketContractAbi from '../artifacts/contracts/MyNftMarketplace.sol/MyNftMarketplace.json'
 import { Item } from '../models/item';
 
-const MarketContractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const MarketContractAddress = '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e';
 
 function getContract(): ethers.Contract {
   const ethereum: providers.ExternalProvider = (window as any).ethereum;
@@ -38,24 +38,28 @@ export async function createToken(url: string, ethPrice: string): Promise<void> 
   console.log('createToken result', result);
 };
 
-export async function getAllItems(): Promise<Item[]> {
+export async function getItemsForSale(): Promise<Item[]> {
   await getConnectedAccounts();
 
   const contract: ethers.Contract = getContract();
-  const result: any[] = await contract.getAllItems();
-  console.log('getAllItems result', result);
+  const result: any[] = await contract.getItemsForSale();
+  console.log('getItemsForSale result', result);
 
-  const getTokenURIs: Promise<string>[] = result.map(i => contract.tokenURI(i.tokenId));
-  const tokenURIs: string[] = await Promise.all(getTokenURIs);
+  const items: Item[] = await mapResultToItems(result, contract);
+  console.log('items for sale', items);
 
-  const items: Item[] = result.map((item: any, index: number) => ({
-    tokenId: item.tokenId.toNumber(),
-    tokenURI: tokenURIs[index],
-    sellerAddress: item.seller,
-    ethPrice: formatEther(item.price)
-  } as Item));
+  return items;
+};
 
-  console.log('items', items);
+export async function getOwnedItems(): Promise<Item[]> {
+  await getConnectedAccounts();
+
+  const contract: ethers.Contract = getContract();
+  const result: any[] = await contract.getOwnedItems();
+  console.log('getOwnedItems result', result);
+
+  const items: Item[] = await mapResultToItems(result, contract);
+  console.log('owned items', items);
 
   return items;
 };
@@ -67,4 +71,28 @@ export async function buyToken(tokenId: number, ethPrice: string): Promise<void>
   const transaction = await contract.buyToken(tokenId, { value: parseEther(ethPrice) });
   const result = await transaction.wait();
   console.log('buyToken result', result);
+};
+
+export async function editItem(tokenId: number, ethPrice: string, isForSale: boolean): Promise<void> {
+  await getConnectedAccounts();
+
+  const contract: ethers.Contract = getContract();
+  const transaction = await contract.editItem(tokenId, parseEther(ethPrice), isForSale);
+  const result = await transaction.wait();
+  console.log('editItem result', result);
+};
+
+async function mapResultToItems(result: any[], contract: ethers.Contract): Promise<Item[]> {
+  const getTokenURIs: Promise<string>[] = result.map(i => contract.tokenURI(i.tokenId));
+  const tokenURIs: string[] = await Promise.all(getTokenURIs);
+
+  const items: Item[] = result.map((item: any, index: number) => ({
+    tokenId: item.tokenId.toNumber(),
+    tokenURI: tokenURIs[index],
+    ownerAddress: item.owner,
+    ethPrice: formatEther(item.price),
+    isForSale: item.isForSale
+  } as Item));
+
+  return items;
 };

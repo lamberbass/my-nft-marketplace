@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import ViewNft from '../components/view-nft';
 import { Item } from '../models/item';
 
-import { getConnectedAccounts, getAllItems } from '../utils/web3-service';
+import { getConnectedAccounts, getItemsForSale } from '../utils/web3-service';
 import styles from '../styles/Home.module.css';
 import button from '../styles/Button.module.css'
 
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
   };
 
   const getItems = async () => {
-    const items: Item[] = await getAllItems();
+    const items: Item[] = await getItemsForSale();
     setItems(items);
   };
 
@@ -47,14 +47,19 @@ const Home: NextPage = () => {
 
           <div className={styles.viewOrCreateNft}>
             <h2>NFTs for sale</h2>
-            <button className={button.customButton}>
-              <Link href={'/create-nft'}><div>Create NFT</div></Link>
-            </button>
+            <div>
+              <button className={button.customButton} style={{"margin": "0px 10px 0px 0px"}}>
+                <Link href={'/create-nft'}><div>Create NFT</div></Link>
+              </button>
+              <button className={button.customButton}>
+                <Link href={'/my-nfts'}><div>My NFTs</div></Link>
+              </button>
+            </div>
           </div>
 
           {items.length > 0
             ? <div className={styles.itemsList}>
-              {items.map(i => <ViewNft key={i.tokenId} item={i} canBuy={i.sellerAddress.toLowerCase() !== currentAccount.toLowerCase()} />)}
+              {items.map(i => <ViewNft key={i.tokenId} item={i} canBuy={i.ownerAddress.toLowerCase() !== currentAccount.toLowerCase()} />)}
             </div>
             : <div>No NFTs</div>}
         </div>

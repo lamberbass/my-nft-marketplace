@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import React from 'react';
 
 import { downloadFile } from '../utils/ipfs-service';
@@ -36,8 +36,8 @@ const ViewNft = (props: ViewNftProps) => {
 
       <div className={styles.metaInfo}>
         <div>
-          <div className={styles.label}>Seller Address</div>
-          <div className={styles.seller}>{props.item.sellerAddress}</div>
+          <div className={styles.label}>Owner Address</div>
+          <div className={styles.owner}>{props.item.ownerAddress}</div>
         </div>
         <div className={styles.priceAndBuy}>
           <div>
