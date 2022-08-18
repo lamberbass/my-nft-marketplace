@@ -1,0 +1,19 @@
+.customButton {
+    color: white;
+    background: transparent;
+    display: inline-block;
+    border: 2px solid var(--primary-color-1);
+    box-sizing: border-box;
+    padding: 11px 35px;
+    border-radius: 20px;
+}
+.customButton:hover:not([disabled]){
+    color: black;;
+    background: white;
+    border: 2px solid white;
+    cursor: pointer;
+}
+.customButton:disabled{
+    opacity: 0.5;
+    cursor: default;
+}

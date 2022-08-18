@@ -3,6 +3,8 @@ import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react'
 import { uploadFile } from '../utils/ipfs-service';
 import { createToken } from '../utils/web3-service';
+import styles from '../styles/CreateNft.module.css'
+import button from '../styles/Button.module.css'
 
 const CreateNft: NextPage = () => {
   const router: NextRouter = useRouter();
@@ -23,19 +25,24 @@ const CreateNft: NextPage = () => {
   }
 
   return (
-    <div>
+    <div className={styles.createCard}>
       <h2>Create your NFT</h2>
 
-      <input type="file" onChange={onFileSelected} />
+      <label className={styles.uploadFile}>
+        <span>Click here to select an image to upload.</span>
+        <input type="file" onChange={onFileSelected} />
+      </label>
 
-      {imageSrc
-        ? <div>
-            <img src={imageSrc} style={{ maxHeight: '400px' }} ></img>
-            <br />
-            ETH Price: <input type='number' onChange={e => setNftPrice(e.target.value)} value={nftPrice}/>
-            <button type='button' onClick={createNft}>Create NFT</button>
-          </div>
-        : <div></div>}
+      <div className={styles.imageContainer}>
+        {imageSrc
+          ? <img className={styles.image} src={imageSrc} alt={selectedFile.name}></img>
+          : <div className={styles.noImage}>No image selected.</div>}
+      </div>
+
+      <h4>Price in ETH</h4>
+      <input className={styles.priceInput} type='number' onChange={e => setNftPrice(e.target.value)} value={nftPrice} />
+
+      <button type='button' className={button.customButton} onClick={createNft} disabled={imageSrc == '' || +nftPrice == 0}>Create NFT</button>
     </div>
   )
 }

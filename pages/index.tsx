@@ -7,6 +7,8 @@ import ViewNft from '../components/view-nft';
 import { Item } from '../models/item';
 
 import { getConnectedAccounts, getAllItems } from '../utils/web3-service';
+import styles from '../styles/Home.module.css';
+import button from '../styles/Button.module.css'
 
 const Home: NextPage = () => {
   const [currentAccount, setCurrentAccount] = useState('');
@@ -24,7 +26,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     connectWallet();
-    getItems(); 
+    getItems();
   }, []);
 
   return (
@@ -34,24 +36,29 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Welcome to My NFT Marketplace!</h1>
+      <h1 className={styles.title}>Welcome to My NFT Marketplace!</h1>
 
-      {currentAccount ? <div>Current account: {currentAccount}</div>
-        : <button type='button' onClick={connectWallet}>Connect Wallet</button>}
+      {!currentAccount
+        ? <button type='button' className={button.customButton} onClick={connectWallet}>Connect Wallet</button>
+        : <div>
+          <div className={styles.account}>Selected Account<span>{currentAccount}</span></div>
 
-      <br></br>
+          <hr></hr>
 
-      <button>
-        <Link href={'/create-nft'}>Create NFT</Link>
-      </button>
+          <div className={styles.viewOrCreateNft}>
+            <h2>NFTs for sale</h2>
+            <button className={button.customButton}>
+              <Link href={'/create-nft'}><div>Create NFT</div></Link>
+            </button>
+          </div>
 
-      <hr></hr>
-
-      <h2>NFTs for sale</h2>
-
-      {items.length > 0 
-        ? items.map(i => <ViewNft key={i.tokenId} item={i} canBuy={i.sellerAddress.toLowerCase() !== currentAccount.toLowerCase()}/>)
-        : <div>No NFTs</div>}
+          {items.length > 0
+            ? <div className={styles.itemsList}>
+              {items.map(i => <ViewNft key={i.tokenId} item={i} canBuy={i.sellerAddress.toLowerCase() !== currentAccount.toLowerCase()} />)}
+            </div>
+            : <div>No NFTs</div>}
+        </div>
+      }
     </div>
   )
 }

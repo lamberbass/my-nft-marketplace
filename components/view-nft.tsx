@@ -4,6 +4,8 @@ import React from 'react';
 import { downloadFile } from '../utils/ipfs-service';
 import { Item } from '../models/item';
 import { buyToken } from '../utils/web3-service';
+import styles from '../styles/ViewNft.module.css'
+import button from '../styles/Button.module.css'
 
 export interface ViewNftProps {
   item: Item;
@@ -27,17 +29,24 @@ const ViewNft = (props: ViewNftProps) => {
   }
 
   return (
-    <div>
-      {imageSrc
-        ? <div>
-            <img src={imageSrc} style={{ maxHeight: '200px' }} ></img>
-            <br />
-            Price: {props.item.ethPrice} ETH
-            { props.canBuy ? <button type='button' onClick={buyNft}>Buy</button> : '' }
-            <br />
-            Seller: {props.item.sellerAddress}
+    <div className={styles.cardProduct}>
+      <div className={styles.cardMedia}>
+        { imageSrc ? <img src={imageSrc} alt={props.item.tokenURI} className={styles.image}></img> : ''}
+      </div>
+
+      <div className={styles.metaInfo}>
+        <div>
+          <div className={styles.label}>Seller Address</div>
+          <div className={styles.seller}>{props.item.sellerAddress}</div>
+        </div>
+        <div className={styles.priceAndBuy}>
+          <div>
+            <div className={styles.label}>Price</div>
+            <div className={styles.price}>{props.item.ethPrice} ETH</div>
           </div>
-        : <div>Downloading...</div>}
+          { props.canBuy ? <button type="button" className={button.customButton} onClick={buyNft}>Buy</button> : '' }
+        </div>
+      </div>
     </div>
   )
 }
