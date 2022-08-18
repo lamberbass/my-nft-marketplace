@@ -41,6 +41,8 @@ contract MyNftMarketplace is ERC721URIStorage {
   }    
 
   function editItem(uint256 tokenId, uint256 price, bool isForSale) public {
+    require(msg.sender == idToItem[tokenId].owner, "Only owner can edit token");
+
     if (idToItem[tokenId].price != price) {
       idToItem[tokenId].price = price;
     }
@@ -49,29 +51,26 @@ contract MyNftMarketplace is ERC721URIStorage {
       idToItem[tokenId].isForSale = isForSale;
     }
   }
-
-  function setItemForSale(uint256 tokenId, bool isForSale) public {
-    require(isForSale != idToItem[tokenId].isForSale, "Token already has the requested isForSale value");
-    idToItem[tokenId].isForSale = isForSale;
-  }
       
   function getItemsForSale() public view returns (Item[] memory) {
     uint256 totalItemCount = tokenIds.current();
     uint256 forSaleCount = 0;
 
     for (uint256 i = 0; i < totalItemCount; i++) {
-      if (idToItem[i + 1].isForSale) {
+      if (idToItem[i + 1].isForSale && idToItem[i + 1].owner != msg.sender) {
         forSaleCount += 1;
       }
     }
 
     Item[] memory items = new Item[](forSaleCount);
+    uint256 currentIndex = 0;
 
-    for (uint256 i = 0; i < forSaleCount; i++) {
-      Item storage currentItem = idToItem[i + 1];
-      if (currentItem.isForSale) {
-        items[i] = currentItem;
-      }
+    for (uint256 i = 0; i < totalItemCount; i++) {
+      if (idToItem[i + 1].isForSale && idToItem[i + 1].owner != msg.sender) {
+          Item storage currentItem = idToItem[i + 1];
+          items[currentIndex] = currentItem;
+          currentIndex += 1;
+        }
     }
 
     return items;
@@ -88,12 +87,14 @@ contract MyNftMarketplace is ERC721URIStorage {
     }
 
     Item[] memory items = new Item[](ownedCount);
+    uint256 currentIndex = 0;
 
-    for (uint256 i = 0; i < ownedCount; i++) {
-      Item storage currentItem = idToItem[i + 1];
-      if (currentItem.owner == msg.sender) {
-        items[i] = currentItem;
-      }
+    for (uint256 i = 0; i < totalItemCount; i++) {
+      if (idToItem[i + 1].owner == msg.sender) {
+          Item storage currentItem = idToItem[i + 1];
+          items[currentIndex] = currentItem;
+          currentIndex += 1;
+        }
     }
 
     return items;

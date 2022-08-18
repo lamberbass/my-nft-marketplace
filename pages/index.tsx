@@ -48,12 +48,16 @@ const Home: NextPage = () => {
           <div className={styles.viewOrCreateNft}>
             <h2>NFTs for sale</h2>
             <div>
-              <button className={button.customButton} style={{"margin": "0px 10px 0px 0px"}}>
-                <Link href={'/create-nft'}><div>Create NFT</div></Link>
-              </button>
-              <button className={button.customButton}>
-                <Link href={'/my-nfts'}><div>My NFTs</div></Link>
-              </button>
+              <Link href={'/create-nft'}>
+                <button className={button.customButton} style={{ "margin": "0px 10px 0px 0px" }}>
+                  Create NFT
+                </button>
+              </Link>
+              <Link href={'/my-nfts'}>
+                <button className={button.customButton}>
+                  My NFTs
+                </button>
+              </Link>
             </div>
           </div>
 

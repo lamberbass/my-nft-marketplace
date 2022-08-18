@@ -4,7 +4,7 @@ import { formatEther, parseEther } from 'ethers/lib/utils';
 import marketContractAbi from '../artifacts/contracts/MyNftMarketplace.sol/MyNftMarketplace.json'
 import { Item } from '../models/item';
 
-const MarketContractAddress = '0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e';
+const MarketContractAddress = '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf';
 
 function getContract(): ethers.Contract {
   const ethereum: providers.ExternalProvider = (window as any).ethereum;

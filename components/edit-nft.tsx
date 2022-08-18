@@ -15,10 +15,12 @@ export interface EditNftProps {
 
 const EditNft = (props: EditNftProps) => {
   const [imageSrc, setImageSrc] = useState('');
+  const [lastSavedPrice, setLastSavedPrice] = useState(props.item.ethPrice);
+  const [lastSavedForSale, setLastSavedForSale] = useState(props.item.isForSale);
   const [nftPrice, setNftPrice] = useState(props.item.ethPrice);
   const [forSale, setForSale] = useState(props.item.isForSale);
 
-  const itemEdited = () => forSale !== props.item.isForSale || +nftPrice !== +props.item.ethPrice;
+  const itemEdited = () => forSale !== lastSavedForSale || +nftPrice !== +lastSavedPrice;
 
   const getImageUrl = async () => {
     const url: string = await downloadFile(props.item.tokenURI, 'image/jpeg');
@@ -31,6 +33,8 @@ const EditNft = (props: EditNftProps) => {
 
   const saveNft = async () => {
     await editItem(props.item.tokenId, nftPrice, forSale);
+    setLastSavedForSale(forSale);
+    setLastSavedPrice(nftPrice);
   }
 
   return (
