@@ -1,9 +1,9 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { formatEther, parseEther, solidityKeccak256 } from 'ethers/lib/utils';
+import { formatEther, parseEther } from 'ethers/lib/utils';
 import { ContractReceipt, ContractTransaction } from "ethers";
+
 import { MyNftMarketplace } from "../typechain-types";
 
 describe("MyNftMarketplace", function () {
@@ -20,6 +20,14 @@ describe("MyNftMarketplace", function () {
     return { myNftMarketplace, owner, otherAccount };
   }
 
+  async function createToken(tokenPrice: string, tokenPath: string, myNftMarketplace: MyNftMarketplace) {
+    const transaction: ContractTransaction = await myNftMarketplace.createToken(tokenPath, parseEther(tokenPrice));
+    await transaction.wait();
+
+    const items: MyNftMarketplace.ItemStructOutput[] = await myNftMarketplace.getOwnedItems();
+    return items[items.length - 1];
+  }
+
   describe("Deployment", () => {
     it("Should be deployed successfully", async () => {
       const { myNftMarketplace } = await loadFixture(deployMyNftMarketplaceFixture);
@@ -32,67 +40,55 @@ describe("MyNftMarketplace", function () {
     });
   });
 
-  describe("Tokens", () => {
+  describe("Creating Tokens", () => {
     it('Should create a token', async () => {
       const { myNftMarketplace, owner } = await loadFixture(deployMyNftMarketplaceFixture);
 
-      const noItems: MyNftMarketplace.ItemStructOutput[] = await myNftMarketplace.getOwnedItems();
-      expect(noItems.length).to.equal(0);
+      const tokenPrice: string = '1.0';
+      const tokenPath: string = 'abcdefg';
+      const newItem: MyNftMarketplace.ItemStructOutput = await createToken(tokenPrice, tokenPath, myNftMarketplace);
 
-      const tokenPrice: string = "1.0";
-      const tokenPath: string = "abcdefg";
+      expect(newItem.tokenId.toNumber()).to.equal(1);
+      expect(formatEther(newItem.price)).to.equal(tokenPrice);
+      expect(newItem.owner).to.equal(owner.address);
+      expect(newItem.isForSale).to.equal(true);
+    });
+  });
 
-      const transaction: ContractTransaction = await myNftMarketplace.createToken(tokenPath, parseEther(tokenPrice));
-      const result: ContractReceipt = await transaction.wait();
-      expect(result).to.not.equal(null);
+  describe("Listing Tokens", () => {
+    const tokenPrice: string = '1.0';
+    const tokenPath: string = 'abcdefg';
 
+    let newItem: MyNftMarketplace.ItemStructOutput;
+    let myNftMarketplace: MyNftMarketplace;
+    let owner: any; // SignerWithAddress
+    let otherAccount: any; // SignerWithAddress
+
+    beforeEach(async () => {
+      // Deploy the contract
+      const result = await loadFixture(deployMyNftMarketplaceFixture);
+      myNftMarketplace = result.myNftMarketplace;
+      owner = result.owner;
+      otherAccount = result.otherAccount;
+
+      // Create a token to use in unit tests
+      newItem = await createToken(tokenPrice, tokenPath, myNftMarketplace);
+    });
+
+    it('Should list owned tokens', async () => {
       const oneItem: MyNftMarketplace.ItemStructOutput[] = await myNftMarketplace.getOwnedItems();
       expect(oneItem.length).to.equal(1);
-
-      expect(oneItem[0].tokenId.toNumber()).to.equal(1);
-      expect(formatEther(oneItem[0].price)).to.equal(tokenPrice);
-      expect(oneItem[0].owner).to.equal(owner.address);
-      expect(oneItem[0].isForSale).to.equal(true);
     });
 
     it('Should list tokens for sale', async () => {
-      const { myNftMarketplace, owner, otherAccount } = await loadFixture(deployMyNftMarketplaceFixture);
-
-      const noItems: MyNftMarketplace.ItemStructOutput[] = await myNftMarketplace.getItemsForSale();
-      expect(noItems.length).to.equal(0);
-
-      const tokenPrice: string = "1.0";
-      const tokenPath: string = "abcdefg";
-
-      const transaction: ContractTransaction = await myNftMarketplace.createToken(tokenPath, parseEther(tokenPrice));
-      const result: ContractReceipt = await transaction.wait();
-      expect(result).to.not.equal(null);
-
-      const contract = myNftMarketplace.connect(otherAccount);
+      const contract: MyNftMarketplace = myNftMarketplace.connect(otherAccount);
       const oneItem: MyNftMarketplace.ItemStructOutput[] = await contract.getItemsForSale();
       expect(oneItem.length).to.equal(1);
     });
 
     it('Should allow buying tokens', async () => {
-      const { myNftMarketplace, owner, otherAccount } = await loadFixture(deployMyNftMarketplaceFixture);
-
-      const tokenPrice: string = "1.0";
-      const tokenPath: string = "abcdefg";
-
-      const transaction: ContractTransaction = await myNftMarketplace.createToken(tokenPath, parseEther(tokenPrice));
-      const result: ContractReceipt = await transaction.wait();
-      expect(result).to.not.equal(null);
-
-      const contract = myNftMarketplace.connect(otherAccount);
-      const oneItem: MyNftMarketplace.ItemStructOutput[] = await contract.getItemsForSale();
-      expect(oneItem.length).to.equal(1);
-
-      expect(oneItem[0].tokenId.toNumber()).to.equal(1);
-      expect(formatEther(oneItem[0].price)).to.equal(tokenPrice);
-      expect(oneItem[0].owner).to.equal(owner.address);
-      expect(oneItem[0].isForSale).to.equal(true);
-
-      const buyTransaction: ContractTransaction = await contract.buyToken(oneItem[0].tokenId, { value: oneItem[0].price });
+      const contract: MyNftMarketplace = myNftMarketplace.connect(otherAccount);
+      const buyTransaction: ContractTransaction = await contract.buyToken(newItem.tokenId, { value: newItem.price });
       const buyResult: ContractReceipt = await buyTransaction.wait();
       expect(buyResult).to.not.equal(null);
 
@@ -106,27 +102,10 @@ describe("MyNftMarketplace", function () {
     });
 
     it('Should allow editing tokens', async () => {
-      const { myNftMarketplace, owner } = await loadFixture(deployMyNftMarketplaceFixture);
-
-      const tokenPrice: string = "1.0";
-      const tokenPath: string = "abcdefg";
-
-      const transaction: ContractTransaction = await myNftMarketplace.createToken(tokenPath, parseEther(tokenPrice));
-      const result: ContractReceipt = await transaction.wait();
-      expect(result).to.not.equal(null);
-
-      const ownedItems: MyNftMarketplace.ItemStructOutput[] = await myNftMarketplace.getOwnedItems();
-      expect(ownedItems.length).to.equal(1);
-
-      expect(ownedItems[0].tokenId.toNumber()).to.equal(1);
-      expect(formatEther(ownedItems[0].price)).to.equal(tokenPrice);
-      expect(ownedItems[0].owner).to.equal(owner.address);
-      expect(ownedItems[0].isForSale).to.equal(true);
-
       const newPrice: string = "2.0";
       const isForSale: boolean = false;
 
-      const editTransaction: ContractTransaction = await myNftMarketplace.editItem(ownedItems[0].tokenId, parseEther(newPrice), isForSale);
+      const editTransaction: ContractTransaction = await myNftMarketplace.editItem(newItem.tokenId, parseEther(newPrice), isForSale);
       const editResult: ContractReceipt = await editTransaction.wait();
       expect(editResult).to.not.equal(null);
 
