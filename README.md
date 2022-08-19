@@ -1,34 +1,75 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# My NFT Marketplace
 
-## Getting Started
+A web application that enables users to:
+- view NFTs for sale, 
+- buy NFTs using Metamask wallet,
+- create new NFTs,
+- view and edit their own NFTS.
 
-First, run the development server:
+#### Screenshots
+
+![Alt text](./readme-assets/items-for-sale.png)
+_View and buy NFTs for sale_
+
+![Alt text](./readme-assets/create-item.png)
+_Create a new NFT_
+
+![Alt text](./readme-assets/owned-items.png)
+_Vien and edit your own NFTs_
+
+#### User flow
+
+1. Users connect their account to Metamask after pressing **Connect Wallet** button (the app attempts to do this automatically if there is an existing account logged in in Metamask).
+2. Once an account is connected, the app displays a list of all the NFTs for sale.
+3. User can click the **Buy** button on an NFT. Metamask popup is opened displaying the total cost and the option to confirm the transaction.
+4. User can click the **My NFTs** button to view all owned NFTs. There is the option to toggle whether an NFT is for sale and edit its price. The changes are persisted only after clicking the **Save** button and confirming the transaction on Metamask.
+5. User can click the **Create NFT** button to create a new NFT. The user selects and image from the computer's file system and sets a price in ETH. After clicking the **Create NFT** button, the image is uploaded to IPFS and metamask popup is opened displaying the total cost and the option to confirm the transaction.
+
+#### Architecture
+This is a dApp (decentralized application) with a simple frontend that connects with a smart contract in Ethereum blockchain and a file storage service using IPFS.
+
+
+![Alt text](./readme-assets/diagram.svg)
+
+#### Tech Stack
+
+- **Solidity** for Smart Contract development.
+- **Hardhat** for Ethereum development environment.
+- **Ethers** for the web app to interact with the smart contract.
+- **Metamask** for in-browser user authentication.
+- **Next.js / React.js** for the web application development.
+- **Mocha / Chai** for testing the smart contract.
+
+## Running locally
+
+#### Prerequisites
+1. Chrome browser with Metamask extension installed
+2. IPFS installed locally on the computer
+
+#### Instructions to run the app
+
+First, initialize a hardhat node (the command should keep running):
+
+```bash
+npx hardhat node
+```
+
+Then, deploy the smart contract to the localhost network:
+
+```bash
+npx hardhat run --network localhost scripts/deploy.ts
+```
+
+Then, initialize an IPFS node (the command should keep running):
+
+```bash
+ipfs daemon
+```
+
+Then, run the development server for the web app:
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
