@@ -17,20 +17,23 @@ contract MyNftMarketplace is ERC721URIStorage {
   }
 
   mapping(uint256 => Item) private idToItem;
-  address payable owner;
 
-  constructor() ERC721("MyNftMarketplace", "MNM") {
-    owner = payable(msg.sender);
-  }
+  event TokenCreated (
+    uint256 indexed tokenId,
+    address owner,
+    uint256 price
+  );
 
-  function createToken(string memory tokenURI, uint256 price) public {
+  constructor() ERC721("MyNftMarketplace", "MNM") {}
+
+  function createToken(string memory tokenUri, uint256 price) external {
     require(price > 0, "Price must be at least 1 wei");
 
     tokenIds.increment();
     uint256 newTokenId = tokenIds.current();
 
     _mint(msg.sender, newTokenId);
-    _setTokenURI(newTokenId, tokenURI);
+    _setTokenURI(newTokenId, tokenUri);
 
     idToItem[newTokenId] = Item(
       newTokenId,
@@ -38,9 +41,11 @@ contract MyNftMarketplace is ERC721URIStorage {
       price,
       true
     );
+
+    emit TokenCreated(newTokenId, msg.sender, price);
   }    
 
-  function editItem(uint256 tokenId, uint256 price, bool isForSale) public {
+  function editItem(uint256 tokenId, uint256 price, bool isForSale) external {
     require(msg.sender == idToItem[tokenId].owner, "Only owner can edit token");
 
     if (idToItem[tokenId].price != price) {
@@ -52,7 +57,7 @@ contract MyNftMarketplace is ERC721URIStorage {
     }
   }
       
-  function getItemsForSale() public view returns (Item[] memory) {
+  function getItemsForSale() external view returns (Item[] memory) {
     uint256 totalItemCount = tokenIds.current();
     uint256 forSaleCount = 0;
 
@@ -76,7 +81,7 @@ contract MyNftMarketplace is ERC721URIStorage {
     return items;
   }
 
-  function getOwnedItems() public view returns (Item[] memory) {
+  function getOwnedItems() external view returns (Item[] memory) {
     uint256 totalItemCount = tokenIds.current();
     uint256 ownedCount = 0;
 
@@ -100,7 +105,7 @@ contract MyNftMarketplace is ERC721URIStorage {
     return items;
   }
 
-  function buyToken(uint256 tokenId) public payable {
+  function buyToken(uint256 tokenId) external payable {
     uint price = idToItem[tokenId].price;
     address payable seller = idToItem[tokenId].owner;
     require(msg.value == price, "Please submit the asking price in order to complete the purchase");
@@ -108,6 +113,6 @@ contract MyNftMarketplace is ERC721URIStorage {
     idToItem[tokenId].isForSale = false;
     idToItem[tokenId].owner = payable(msg.sender);
     _transfer(seller, msg.sender, tokenId);
-    payable(seller).transfer(msg.value);
+    seller.transfer(msg.value);
   }
 }
