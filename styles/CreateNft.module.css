@@ -86,3 +86,10 @@
 .priceInput:focus {
     outline-width: 0;
 }
+
+.usdPrice {
+    margin-bottom: 20px;
+    font-size: small;
+    font-style: italic;
+    color: #a3a3a3;
+}

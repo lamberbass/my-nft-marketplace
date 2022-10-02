@@ -13,6 +13,12 @@ async function main() {
   
   await marketplace.deployed();
   console.log("MyNftMarketplace deployed to:", marketplace.address);
+
+  const PriceConsumer = await ethers.getContractFactory("PriceConsumer");
+  const priceConsumer = await PriceConsumer.deploy();
+  
+  await priceConsumer.deployed();
+  console.log("PriceConsumer deployed to:", priceConsumer.address);
 }
 
 main()

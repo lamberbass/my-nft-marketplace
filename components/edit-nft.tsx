@@ -3,11 +3,12 @@ import React from 'react';
 
 import { downloadFile } from '../utils/ipfs-service';
 import { Item } from '../models/item';
-import { editItem } from '../utils/web3-service';
+import { editItem, ethUsdPrice } from '../utils/web3-service';
 import edit from '../styles/EditNft.module.css';
 import view from '../styles/ViewNft.module.css';
 import button from '../styles/Button.module.css';
 import toggle from '../styles/Toggle.module.css';
+import { getUsd } from '../utils/price.helper';
 
 export interface EditNftProps {
   item: Item;
@@ -47,6 +48,10 @@ const EditNft = (props: EditNftProps) => {
         <div className={edit.priceContainer}>
           <div className={view.label}>Price in ETH</div>
           <input className={edit.priceInput} type='number' onChange={e => setNftPrice(e.target.value)} value={nftPrice} />
+        </div>
+
+        <div className={edit.usdPrice}>
+          <div>${getUsd(nftPrice, ethUsdPrice)}</div>
         </div>
 
         <div className={edit.priceContainer}>

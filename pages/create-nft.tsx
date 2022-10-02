@@ -3,9 +3,10 @@ import { NextRouter, useRouter } from 'next/router';
 import { useState } from 'react';
 
 import { uploadFile } from '../utils/ipfs-service';
-import { createToken } from '../utils/web3-service';
+import { createToken, ethUsdPrice } from '../utils/web3-service';
 import styles from '../styles/CreateNft.module.css'
 import button from '../styles/Button.module.css'
+import { getUsd } from '../utils/price.helper';
 
 const CreateNft: NextPage = () => {
   const router: NextRouter = useRouter();
@@ -42,7 +43,8 @@ const CreateNft: NextPage = () => {
 
       <h4>Price in ETH</h4>
       <input className={styles.priceInput} type='number' onChange={e => setNftPrice(e.target.value)} value={nftPrice} />
-
+      <div className={styles.usdPrice}>${getUsd(nftPrice, ethUsdPrice)}</div>
+      
       <button type='button' className={button.customButton} onClick={createNft} disabled={imageSrc == '' || +nftPrice == 0}>Create NFT</button>
     </div>
   )

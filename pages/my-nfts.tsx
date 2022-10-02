@@ -2,7 +2,6 @@ import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 
 import { getConnectedAccounts, getOwnedItems } from '../utils/web3-service';
-import styles from '../styles/CreateNft.module.css'
 import home from '../styles/Home.module.css'
 
 import EditNft from '../components/edit-nft';

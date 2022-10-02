@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import ViewNft from '../components/view-nft';
 import { Item } from '../models/item';
 
-import { getConnectedAccounts, getItemsForSale } from '../utils/web3-service';
+import { getConnectedAccounts, getItemsForSale, getUsdPrice } from '../utils/web3-service';
 import styles from '../styles/Home.module.css';
 import button from '../styles/Button.module.css'
 
@@ -24,8 +24,13 @@ const Home: NextPage = () => {
     setItems(items);
   };
 
+  const getPrice = async () => {
+    await getUsdPrice();
+  };
+
   useEffect(() => {
     connectWallet();
+    getPrice();
     getItems();
   }, []);
 

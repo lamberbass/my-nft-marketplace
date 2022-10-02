@@ -39,14 +39,23 @@
 
 .cardProduct .metaInfo .label {
     color: var(--primary-color-2);
+    margin-bottom: 5px;
 }
 
 .cardProduct .metaInfo .priceAndBuy {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
+    align-items: flex-end;
 }
 
 .cardProduct .metaInfo .price {
     font-weight: bold;
+}
+
+.cardProduct .metaInfo .usdPrice {
+    margin-top: 5px;
+    font-size: small;
+    font-style: italic;
+    color: #a3a3a3;
 }

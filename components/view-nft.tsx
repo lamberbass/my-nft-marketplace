@@ -3,9 +3,10 @@ import React from 'react';
 
 import { downloadFile } from '../utils/ipfs-service';
 import { Item } from '../models/item';
-import { buyToken } from '../utils/web3-service';
+import { buyToken, ethUsdPrice } from '../utils/web3-service';
 import styles from '../styles/ViewNft.module.css'
 import button from '../styles/Button.module.css'
+import { getUsd } from '../utils/price.helper';
 
 export interface ViewNftProps {
   item: Item;
@@ -43,8 +44,11 @@ const ViewNft = (props: ViewNftProps) => {
           <div>
             <div className={styles.label}>Price</div>
             <div className={styles.price}>{props.item.ethPrice} ETH</div>
+            <div className={styles.usdPrice}>${getUsd(props.item.ethPrice, ethUsdPrice)}</div>
           </div>
-          { props.canBuy ? <button type="button" className={button.customButton} onClick={buyNft}>Buy</button> : '' }
+          <div>
+            { props.canBuy ? <button type="button" className={button.customButton} onClick={buyNft}>Buy</button> : '' }
+          </div>
         </div>
       </div>
     </div>

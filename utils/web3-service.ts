@@ -2,9 +2,12 @@ import { providers, ethers, BigNumber } from 'ethers';
 import { formatEther, parseEther } from 'ethers/lib/utils';
 
 import marketContractAbi from '../artifacts/contracts/MyNftMarketplace.sol/MyNftMarketplace.json'
+import priceConsumerAbi from '../artifacts/contracts/PriceConsumer.sol/PriceConsumer.json'
+
 import { Item } from '../models/item';
 
 const MarketContractAddress = '';
+const PriceConsumerAddress = '';
 
 function getContract(): ethers.Contract {
   const ethereum: providers.ExternalProvider = (window as any).ethereum;
@@ -13,6 +16,8 @@ function getContract(): ethers.Contract {
 
   return new ethers.Contract(MarketContractAddress, marketContractAbi.abi, signer);
 }
+
+export let ethUsdPrice: string = '0';
 
 export async function getConnectedAccounts(): Promise<string[]> {
   const ethereum: providers.ExternalProvider | undefined = (window as any).ethereum;
@@ -27,6 +32,25 @@ export async function getConnectedAccounts(): Promise<string[]> {
   });
 
   return accounts;
+};
+
+export async function getUsdPrice(): Promise<string> {
+  await getConnectedAccounts();
+
+  const ethereum: providers.ExternalProvider = (window as any).ethereum;
+  const provider: providers.Web3Provider = new ethers.providers.Web3Provider(ethereum);
+  const signer: providers.JsonRpcSigner = provider.getSigner();
+  const contract = new ethers.Contract(PriceConsumerAddress, priceConsumerAbi.abi, signer);
+
+  const price: BigNumber = await contract.getLatestPrice();
+  console.log('getEthUsdPrice result', price, price.toString());
+
+  // all prices of Non-ETH pairs have 8 decimals precision
+  const decimals: number = 8;
+  const usdPrice: number = +price / Math.pow(10, decimals);
+
+  ethUsdPrice = usdPrice.toString();
+  return ethUsdPrice;
 };
 
 export async function createToken(url: string, ethPrice: string): Promise<void> {

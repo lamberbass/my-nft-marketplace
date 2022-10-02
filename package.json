@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.5.1",
     "@openzeppelin/contracts": "^4.7.2",
     "ethers": "^5.6.9",
     "ipfs-http-client": "^57.0.3",
